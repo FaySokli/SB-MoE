@@ -59,7 +59,7 @@ def main(cfg: DictConfig):
         use_adapters = cfg.model.adapters.use_adapters,
         device=cfg.model.init.device
     )
-    model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}.pt', weights_only=True))
+    model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}.pt', weights_only=True))
     """
     logging.info(f'Loading model from {cfg.model.init.save_model}.pt')
     if os.path.exists(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'):

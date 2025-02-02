@@ -1,0 +1,21 @@
+init:
+  doc_model: 'google/bert_uncased_L-2_H-128_A-2'
+  tokenizer: ${model.init.doc_model}
+  device: 'cuda'
+  aggregation_mode: 'mean'
+  embedding_size: 128
+  save_model: 'bert-tiny'
+  specialized_mode: 'sbmoe_top1'
+  max_tokenizer_length: 256
+  normalize: False
+  temperature: 0.05
+adapters:
+  num_experts_to_use: 6
+  num_experts: 6
+  residual: True
+  latent_size: 192
+  non_linearity: 'relu'
+  use_adapters: True
+
+continue_train: False
+  

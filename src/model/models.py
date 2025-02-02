@@ -43,7 +43,7 @@ class MoEBiEncoder(nn.Module):
         self.normalize = normalize
         self.max_tokens = max_tokens
         self.use_adapters = use_adapters
-        assert specialized_mode in ['sbmoe_top1', 'sbmoe_all'], 'Only sbmoe_top1 and sbmoe_all specialzed mode allowed'
+        assert specialized_mode in ['sbmoe_top1', 'sbmoe_all', 'random'], 'Only random, sbmoe_top1 and sbmoe_all specialzed modes allowed'
         self.specialized_mode = specialized_mode
         assert pooling_mode in ['max', 'mean', 'cls', 'identity'], 'Only cls, identity, max and mean pooling allowed'
         if pooling_mode == 'mean':
@@ -80,6 +80,14 @@ class MoEBiEncoder(nn.Module):
         query_embedding = self.query_encoder_no_moe(sentences)
         if self.use_adapters:
             query_class = self.cls(query_embedding)
+            if self.specialized_mode == "random":
+                query_class = torch.rand(query_embedding.shape[0], self.num_classes).to(self.device)
+                # TOP-k GATING
+                topk_values, topk_indices = torch.topk(query_class, 1, dim=1)
+                mask = torch.zeros_like(query_class).scatter_(1, topk_indices, 1)
+                
+                # Multiply the original output with the mask to keep only the max value
+                query_class = query_class * mask
             query_embedding = self.query_embedder(query_embedding, query_class)
         return query_embedding
         
@@ -95,6 +103,14 @@ class MoEBiEncoder(nn.Module):
         doc_embedding = self.doc_encoder_no_moe(sentences)
         if self.use_adapters:
             doc_class = self.cls(doc_embedding)
+            if self.specialized_mode == "random":
+                doc_class = torch.rand(doc_embedding.shape[0], self.num_classes).to(self.device)
+                # TOP-k GATING
+                topk_values, topk_indices = torch.topk(doc_class, 1, dim=1)
+                mask = torch.zeros_like(doc_class).scatter_(1, topk_indices, 1)
+                
+                # Multiply the original output with the mask to keep only the max value
+                doc_class = doc_class * mask
             doc_embedding = self.doc_embedder(doc_embedding, doc_class)
         return doc_embedding
         
