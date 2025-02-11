@@ -88,7 +88,13 @@ def main(cfg: DictConfig):
         use_adapters = cfg.model.adapters.use_adapters,
         device=cfg.model.init.device
     )
-    model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}.pt', weights_only=True))
+    if cfg.model.init.specialized_mode == "sbmoe_top1" or cfg.model.init.specialized_mode == "sbmoe_all":
+        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+        print("OK")
+    elif cfg.model.init.specialized_mode == "random":
+        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
+    else:
+        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt', weights_only=True))
         
     doc_embedding = torch.load(f'{cfg.testing.embedding_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_fullrank.pt', weights_only=True).to(cfg.model.init.device)
     
@@ -119,7 +125,10 @@ def main(cfg: DictConfig):
         ranx_run = Run(bert_run, 'FullRun')
         models = [ranx_run]
     
-    ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-{cfg.model.init.specialized_mode}.json')
+    if cfg.model.adapters.use_adapters:
+        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-{cfg.model.init.specialized_mode}.json')
+    else:
+        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-ft.json')
     
     evaluation_report = compare(ranx_qrels, models, ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3'])
     print(evaluation_report)
