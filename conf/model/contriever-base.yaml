@@ -5,7 +5,7 @@ init:
   aggregation_mode: 'mean'
   embedding_size: 768
   save_model: 'contriever-base'
-  specialized_mode: 'sbmoe_all'
+  specialized_mode: 'variant_all'
   max_tokenizer_length: 256
   normalize: False
   temperature: 0.05

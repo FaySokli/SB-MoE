@@ -1,9 +1,0 @@
-data_dir: ../multi-domain/physics
-corpus_path: ${dataset.data_dir}/collection.jsonl
-query_path: ${dataset.data_dir}/train/queries.jsonl
-qrels_path: ${dataset.data_dir}/train/qrels.tsv
-val_split: 0.05
-output_dir: output/multi-domain/physics
-model_dir: ${dataset.output_dir}/saved_models
-logs_dir: ${dataset.output_dir}/logs
-runs_dir: ${dataset.output_dir}/runs

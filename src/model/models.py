@@ -30,7 +30,7 @@ class MoEBiEncoder(nn.Module):
         num_classes,
         max_tokens=512,
         normalize=False,
-        specialized_mode='sbmoe_top1',
+        specialized_mode='variant_top1',
         pooling_mode='mean',
         use_adapters=True,
         device='cpu',
@@ -43,7 +43,7 @@ class MoEBiEncoder(nn.Module):
         self.normalize = normalize
         self.max_tokens = max_tokens
         self.use_adapters = use_adapters
-        assert specialized_mode in ['sbmoe_top1', 'sbmoe_all', 'random'], 'Only random, sbmoe_top1 and sbmoe_all specialzed modes allowed'
+        assert specialized_mode in ['variant_top1', 'variant_all', 'random'], 'Only random, variant_top1 and variant_all specialzed modes allowed'
         self.specialized_mode = specialized_mode
         assert pooling_mode in ['max', 'mean', 'cls', 'identity'], 'Only cls, identity, max and mean pooling allowed'
         if pooling_mode == 'mean':
@@ -136,7 +136,7 @@ class MoEBiEncoder(nn.Module):
             return noisy_logits
         
         else:
-            if self.specialized_mode == 'sbmoe_top1':
+            if self.specialized_mode == 'variant_top1':
                 out = torch.softmax(out, dim=-1)
 
                 # TOP-k GATING
@@ -147,7 +147,7 @@ class MoEBiEncoder(nn.Module):
                 out = out * mask
                 return out
             
-            elif self.specialized_mode == 'sbmoe_all':
+            elif self.specialized_mode == 'variant_all':
                 out = torch.softmax(out, dim=-1)
                 return out
     
