@@ -59,11 +59,13 @@ def main(cfg: DictConfig):
         use_adapters = cfg.model.adapters.use_adapters,
         device=cfg.model.init.device
     )
-    if cfg.model.init.specialized_mode == "variant_top1" or cfg.model.init.specialized_mode == "variant_all":
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-        print("OK")
-    elif cfg.model.init.specialized_mode == "random":
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
+    if cfg.model.adapters.use_adapters:
+        if cfg.model.init.specialized_mode == "variant_top1":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
+        elif cfg.model.init.specialized_mode == "variant_all":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_all.pt', weights_only=True))            
+        elif cfg.model.init.specialized_mode == "random":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
     else:
         model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt', weights_only=True))
     

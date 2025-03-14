@@ -47,15 +47,11 @@ def train(train_data, model, optimizer, loss_fn, batch_size, epoch, device):
     for _, batch in enumerate(train_data):
         # with torch.autocast(device_type=device):
         output = model((batch['question'], batch['pos_text']))
-            # class_label = torch.ones(batch['pos_category'].shape[0], 1).to(device)
         loss_val, sim_correct = loss_fn(
-                # class_label, output[0],
             output[0], output[1]
         )
         sim_accuracy.extend(sim_correct.tolist())
 
-            # make_dot(loss_val, params=dict(model.named_parameters())).render("loss_val.png", format="png")
-            # exit()
         loss_val.backward()
         optimizer.step()
         optimizer.zero_grad()
@@ -98,9 +94,7 @@ def validate(val_data, model, loss_fn, batch_size, epoch, device):
         with torch.no_grad():
             # with torch.autocast(device_type=device):
             output = model.val_forward((batch['question'], batch['pos_text']))
-                # class_label = torch.ones(batch['pos_category'].shape[0], 1).to(device)
             loss_val, sim_correct = loss_fn.val_forward(
-                # class_label, output[0],
                 output[0], output[1]
             )
             sim_accuracy.extend(sim_correct.tolist())

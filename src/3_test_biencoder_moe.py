@@ -88,14 +88,18 @@ def main(cfg: DictConfig):
         use_adapters = cfg.model.adapters.use_adapters,
         device=cfg.model.init.device
     )
-    if cfg.model.init.specialized_mode == "variant_top1" or cfg.model.init.specialized_mode == "variant_all":
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-        print("OK")
-    elif cfg.model.init.specialized_mode == "random":
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
+    
+    if cfg.model.adapters.use_adapters:
+        if cfg.model.init.specialized_mode == "variant_top1":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
+        elif cfg.model.init.specialized_mode == "variant_all":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_all.pt', weights_only=True))            
+        elif cfg.model.init.specialized_mode == "random":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
     else:
         model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt', weights_only=True))
-        
+    
+
     doc_embedding = torch.load(f'{cfg.testing.embedding_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_fullrank.pt', weights_only=True).to(cfg.model.init.device)
     
     with open(f'{cfg.testing.embedding_dir}/id_to_index_{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_fullrank.json', 'r') as f:
@@ -133,37 +137,6 @@ def main(cfg: DictConfig):
     evaluation_report = compare(ranx_qrels, models, ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3'])
     print(evaluation_report)
     logging.info(f"Results for {cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder.json:\n{evaluation_report}")
-
-    if 'nq' not in cfg.testing.data_dir and cfg.testing.rerank:
-        with open(cfg.testing.dev_bm25_run_path, 'r') as f:
-            bm25_run = json.load(f)
-        
-        data = Indxr(cfg.testing.dev_query_path, key_id='_id')
-        bert_run = get_bert_rerank(data, model, doc_embedding, bm25_run, id_to_index)
-            
-            
-        
-        with open(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder_dev.json', 'w') as f:
-            json.dump(bert_run, f)
-            
-            
-        ranx_qrels = Qrels.from_file(cfg.testing.dev_qrels_path)
-        
-        if cfg.testing.rerank:
-            ranx_run = Run(bert_run, 'ReRanker')
-            ranx_bm25_run = Run(bm25_run, name='BM25')
-            models = [ranx_bm25_run, ranx_run]
-        else:
-            ranx_run = Run(bert_run, 'FullRun')
-            models = [ranx_run]
-        evaluation_report = compare(
-            ranx_qrels, 
-            models, 
-            ['map@100', 'mrr@10', 'recall@100', 'precision@5', 'ndcg@10', 'precision@1', 'ndcg@3']
-        )
-        print(evaluation_report)
-        logging.info(f"Results for dev set {cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder.json:\n{evaluation_report}")
-
 
 if __name__ == '__main__':
     main()

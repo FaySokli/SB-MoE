@@ -13,17 +13,6 @@ class MultipleRankingLossBiEncoder(nn.Module):
         self.temperature = temperature
         
         self.device = device
-    def no_acc_forward(
-        self,
-        anchors,
-        positives
-    ):
-        pw_similarity = torch.mm(anchors / self.temperature, positives.T)
-        labels = torch.tensor([x for x in range(anchors.shape[0])], device=self.device)
-        
-        pw_loss = self.CELoss(pw_similarity, labels)
-        
-        return pw_loss
     
     def forward(
         self,

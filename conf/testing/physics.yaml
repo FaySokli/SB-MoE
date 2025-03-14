@@ -1,7 +1,0 @@
-data_dir: ../multi-domain/physics
-corpus_path: ${testing.data_dir}/collection.jsonl
-query_path: ${testing.data_dir}/test/queries.jsonl
-qrels_path: ${testing.data_dir}/test/qrels.json
-bm25_run_path: ${testing.data_dir}/bm25_run.lz4
-embedding_dir: ${dataset.output_dir}/embeddings
-rerank: False
