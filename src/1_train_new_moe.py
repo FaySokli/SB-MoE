@@ -232,9 +232,9 @@ def main(cfg: DictConfig) -> None:
             best_val_loss = val_loss
             logging.info(f'saving model checkpoint at epoch {epoch + 1}')
         if cfg.model.adapters.use_adapters:
-            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}.pt')
+            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}TEMP005.pt')
         else:
-            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt')
+            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ftTEMP100.pt')
 
 
 if __name__ == '__main__':

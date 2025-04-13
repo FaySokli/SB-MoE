@@ -5,6 +5,7 @@ multi-domain*
 hotpotqa*
 nfcorpus*
 fiqa*
+msmarco*
 .hydra/
 output/
 *.json
