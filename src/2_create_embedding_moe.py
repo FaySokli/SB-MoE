@@ -61,11 +61,13 @@ def main(cfg: DictConfig):
     )
     if cfg.model.adapters.use_adapters:
         if cfg.model.init.specialized_mode == "variant_top1":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
+            # model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
+            model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP005.pt', weights_only=True))
+            print("MSMARCO005")
         elif cfg.model.init.specialized_mode == "variant_all":
             # model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
-            model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
-            print("MSMARCO")   
+            model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP005.pt', weights_only=True))
+            print("MSMARCO005")   
         elif cfg.model.init.specialized_mode == "random":
             model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-randomTEMP100.pt', weights_only=True))
             print("OK")
