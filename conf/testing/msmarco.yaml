@@ -1,4 +1,4 @@
-data_dir: ../msmarco
+data_dir: /home/ubuntu/esokli/ContextualizedMoE/msmarco
 corpus_path: ${testing.data_dir}/corpus.jsonl
 dev_query_path: ${dataset.data_dir}/dev_queries.jsonl
 dev_qrels_path: ${dataset.data_dir}/dev_qrels.json
