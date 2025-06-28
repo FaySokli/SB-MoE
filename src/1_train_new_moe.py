@@ -161,9 +161,6 @@ def main(cfg: DictConfig) -> None:
     config.adapter_latent_size = cfg.model.adapters.latent_size
     config.adapter_non_linearity = cfg.model.adapters.non_linearity
     config.use_adapters = cfg.model.adapters.use_adapters
-    # doc_model = MoEBertModel.from_pretrained(cfg.model.init.doc_model, config=config)
-    # doc_model = AdapterBertModel.from_pretrained(cfg.model.init.doc_model, config=config)
-    # doc_model = BertWithMoE(cfg.model.init.doc_model, num_experts=cfg.model.init.num_experts, num_experts_to_use=cfg.model.init.num_experts_to_use)
     doc_model = AutoModel.from_pretrained(cfg.model.init.doc_model, config=config)
     # print(doc_model)
     # exit()
@@ -180,24 +177,18 @@ def main(cfg: DictConfig) -> None:
     logging.info("Model: {}, lr: {:.2e}, batch_size: {}, epochs: {}".format(cfg.model.init.doc_model, cfg.training.lr, cfg.training.batch_size, cfg.training.max_epoch))
     logging.info("Normalize: {}, specialized mode: {}, pooling mode: {}".format(cfg.model.init.normalize, cfg.model.init.specialized_mode, cfg.model.init.aggregation_mode))
     loss_fn = MultipleRankingLossBiEncoder(device=cfg.model.init.device, temperature=cfg.model.init.temperature)
-    # loss_fn = TripletMarginLoss(.1)
-
     batch_size = cfg.training.batch_size
     max_epoch = cfg.training.max_epoch
-    
     
     if cfg.model.continue_train:
         logging.info('Loading previous best model to continue training')
         model.load_state_dict(load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'))
         best_val_loss = validate(val_data, model, loss_fn, batch_size, 0, cfg.model.init.device)
-        logging.info("VAL EPOCH: {}, Average Loss: {:.5e}".format('prev best', best_val_loss))
-        
-    
+        logging.info("VAL EPOCH: {}, Average Loss: {:.5e}".format('prev best', best_val_loss))    
     else:
         best_val_loss = 999
     
     # optimizer = AdamW(model.parameters(), lr=cfg.training.lr)
-
     optimizer = AdamW([
         {
             'params': model.doc_model.parameters(),
@@ -232,9 +223,9 @@ def main(cfg: DictConfig) -> None:
             best_val_loss = val_loss
             logging.info(f'saving model checkpoint at epoch {epoch + 1}')
         if cfg.model.adapters.use_adapters:
-            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}TEMP100.pt')
+            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-{cfg.model.init.specialized_mode}.pt')
         else:
-            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ftTEMP100.pt')
+            save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt')
 
 
 if __name__ == '__main__':
