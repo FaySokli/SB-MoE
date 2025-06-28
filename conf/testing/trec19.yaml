@@ -1,0 +1,8 @@
+data_dir: ../msmarco
+corpus_path: ${testing.data_dir}/corpus.jsonl
+query_path: ${testing.data_dir}/msmarco-test2019-queries-43.jsonl
+qrels_path: ${testing.data_dir}/2019qrels-pass.json
+bm25_run_path: ${testing.data_dir}/bm25_run.lz4
+corpus_logits: ${dataset.data_dir}/blooms/msmarco_logits.jsonl
+embedding_dir: ${dataset.output_dir}/embeddings
+rerank: False

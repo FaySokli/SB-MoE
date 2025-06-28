@@ -33,6 +33,7 @@ class MoEBiEncoder(nn.Module):
         specialized_mode='variant_top1',
         pooling_mode='mean',
         use_adapters=True,
+        track_expert_usage=False,
         device='cpu',
     ):
         super(MoEBiEncoder, self).__init__()
@@ -56,6 +57,8 @@ class MoEBiEncoder(nn.Module):
             self.pooling = self.identity
         
         self.num_classes = num_classes
+        self.expert_usage_counter = torch.zeros(self.num_classes).to(self.device)
+        self.track_expert_usage = track_expert_usage
         self.init_cls()
         
         self.specializer = nn.ModuleList([Specializer(self.hidden_size, self.device) for _ in range(self.num_classes)])    
@@ -131,7 +134,6 @@ class MoEBiEncoder(nn.Module):
             topk_values, topk_indices = torch.topk(noisy_logits, 1, dim=1)
             mask = torch.zeros_like(noisy_logits).scatter_(1, topk_indices, 1)
             
-            # Multiply the original output with the mask to keep only the max value
             noisy_logits = noisy_logits * mask
             return noisy_logits
         
@@ -143,12 +145,15 @@ class MoEBiEncoder(nn.Module):
                 topk_values, topk_indices = torch.topk(out, 1, dim=1)
                 mask = torch.zeros_like(out).scatter_(1, topk_indices, 1)
                 
-                # Multiply the original output with the mask to keep only the max value
                 out = out * mask
                 return out
             
             elif self.specialized_mode == 'variant_all':
                 out = torch.softmax(out, dim=-1)
+                if self.track_expert_usage:
+                    top_expert = out.argmax(dim=1)
+                    for idx in top_expert:
+                        self.expert_usage_counter[idx] += 1
                 return out
     
 

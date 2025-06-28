@@ -8,7 +8,7 @@ init:
   specialized_mode: 'variant_all'
   max_tokenizer_length: 256
   normalize: False
-  temperature: 0.05
+  temperature: 1
 adapters:
   num_experts_to_use: 6
   num_experts: 6

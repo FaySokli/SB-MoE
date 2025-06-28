@@ -1,11 +1,11 @@
 init:
-  doc_model: 'huawei-noah/TinyBERT_General_4L_312D'
+  doc_model: 'colbert-ir/colbertv2.0'
   tokenizer: ${model.init.doc_model}
   device: 'cuda'
   aggregation_mode: 'mean'
-  embedding_size: 312
-  save_model: 'tinybert'
-  specialized_mode: 'variant_top1'
+  embedding_size: 768
+  save_model: 'colbert'
+  specialized_mode: 'sbmoe_all'
   max_tokenizer_length: 256
   normalize: False
   temperature: 1
@@ -18,4 +18,3 @@ adapters:
   use_adapters: True
 
 continue_train: False
-  

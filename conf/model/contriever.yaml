@@ -1,14 +1,14 @@
 init:
-  doc_model: 'huawei-noah/TinyBERT_General_4L_312D'
+  doc_model: 'facebook/contriever-msmarco'
   tokenizer: ${model.init.doc_model}
   device: 'cuda'
   aggregation_mode: 'mean'
-  embedding_size: 312
-  save_model: 'tinybert'
-  specialized_mode: 'variant_top1'
+  embedding_size: 768
+  save_model: 'contriever'
+  specialized_mode: 'blooms_top1AVG'
   max_tokenizer_length: 256
   normalize: False
-  temperature: 1
+  temperature: 0.05
 adapters:
   num_experts_to_use: 6
   num_experts: 6
