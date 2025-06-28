@@ -35,13 +35,11 @@ def visualize_tsne(query_embedding, top_doc_embeddings, top_doc_ids, query_id, o
     fig = plt.figure(figsize=(12, 10))
     ax = fig.add_subplot(111, projection='3d')
 
-    # Plot the query
     ax.scatter(embeddings_3d[0, 0], embeddings_3d[0, 1], embeddings_3d[0, 2], 
                c='black', label='query', marker='X', s=100)
 
-    # Shape & color setup
     color_map = plt.cm.tab10
-    marker_list = ['o', '^', 's', 'D', 'v', 'P', '*', 'X', '<', '>']  # Enough for up to 10 experts
+    marker_list = ['o', '^', 's', 'D', 'v', 'P', '*', 'X', '<', '>']
 
     for i, (x, y, z) in enumerate(embeddings_3d[1:], start=1):
         doc_id = top_doc_ids[i-1]
@@ -74,7 +72,7 @@ def visualize_tsne(query_embedding, top_doc_embeddings, top_doc_ids, query_id, o
             )
 
     ax.legend(handles=handles, fontsize=20)
-    # ax.set_title(f"3D t-SNE: Query {query_id} and Top 100 Docs")
+    # ax.set_title(f"3D t-SNE: Query {query_id} and Top 1000 Docs")
     plt.grid(True)
     plt.tight_layout()
 
@@ -159,17 +157,17 @@ def main(cfg: DictConfig):
     
     if cfg.model.adapters.use_adapters:
         if cfg.model.init.specialized_mode == "variant_top1":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt')
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
         elif cfg.model.init.specialized_mode == "variant_all":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1TEMP100.pt')
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
         elif cfg.model.init.specialized_mode == "random":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-randomTEMP100.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-randomTEMP100.pt')
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt')
     else:
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ftTEMP100.pt', weights_only=True))
-        print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ftTEMP100.pt')
+        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt', weights_only=True))
+        print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-ft.pt')
     
 
     doc_embedding = torch.load(f'{cfg.testing.embedding_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_fullrank.pt', weights_only=True).to(cfg.model.init.device)
@@ -202,24 +200,24 @@ def main(cfg: DictConfig):
         models = [ranx_run]
 
     if cfg.model.adapters.use_adapters:
-        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-{cfg.model.init.specialized_mode}TEMP100.json')
+        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-{cfg.model.init.specialized_mode}.json')
     else:
-        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-ftTEMP100.json')
+        ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder-ft.json')
     
     evaluation_report = compare(ranx_qrels, models, ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3'])
     print(evaluation_report)
     logging.info(f"Results for {cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_biencoder.json:\n{evaluation_report}")
 
     ############################
-    # Create directory to save t-SNE plots
+    # Create directory for t-SNE plots
     tsne_dir = os.path.join(cfg.dataset.output_dir, 'tsne_plots')
     os.makedirs(tsne_dir, exist_ok=True)
 
-    # Reuse .npy t-SNE files
+    # Load .npy t-SNE files
     tsne_data_dir = cfg.testing.embedding_dir
     prefix = "fullrank"  # adjust if needed (e.g., rerank)
 
-    # Load embeddings and expert IDs
+    # Load embeddings and expert_ids
     embedding_tsne_path = os.path.join(tsne_data_dir, f"doc_embeddings_{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_{prefix}.npy")
     expert_ids_path = os.path.join(tsne_data_dir, f"expert_ids_{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}_{prefix}.npy")
 
@@ -236,21 +234,21 @@ def main(cfg: DictConfig):
     # random_query = data.get(query_id)
     print(f"Selected query ID: {query_id}")
 
-    # Get query embedding
+    # query
     model.eval()
     with torch.no_grad():
         query_embedding = model.query_encoder([random_query['text']]).to(cfg.model.init.device)
 
-    # Get top 100 doc IDs and their embeddings
-    top_100_ids = list(bert_run[query_id].keys())[:1000]
-    top_100_indices = [id_to_index[doc_id] for doc_id in top_100_ids]
-    top_doc_embeddings = doc_embedding[top_100_indices]
-    top_doc_expert_ids = [int(all_expert_ids[i]) for i in top_100_indices]
+    # Get top 1000 docs
+    topk_ids = list(bert_run[query_id].keys())[:1000]
+    topk_indices = [id_to_index[doc_id] for doc_id in topk_ids]
+    top_doc_embeddings = doc_embedding[topk_indices]
+    top_doc_expert_ids = [int(all_expert_ids[i]) for i in topk_indices]
     relevants_dict = ranx_qrels.to_dict()
     relevants = set(relevants_dict.get(query_id, {}).keys())
 
     # Generate and save t-SNE
-    visualize_tsne(query_embedding, top_doc_embeddings, top_100_ids, query_id, tsne_dir, top_doc_expert_ids, relevants, use_adapters=cfg.model.adapters.use_adapters)
+    visualize_tsne(query_embedding, top_doc_embeddings, topk_ids, query_id, tsne_dir, top_doc_expert_ids, relevants, use_adapters=cfg.model.adapters.use_adapters)
     ############################
 
 if __name__ == '__main__':
