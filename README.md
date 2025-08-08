@@ -17,7 +17,7 @@ _*Note: When use_adapters=True, only two modes are allowed; (i) 'variant_all' an
 and on the right by our model, for all seven benchmarks.
 ### MS MARCO
 <p float="left">
-  <img src="../DenseIRMoE/tsne/msmarco/_00tsne_query_541425_3D_NO_experts.png" width="45%" />
+  <img src="DenseIRMoE/tsne/msmarco/_00tsne_query_541425_3D_NO_experts.png" width="45%" />
   <img src="../DenseIRMoE/tsne/msmarco/_00tsne_query_541425_3D_experts.png" width="45%" />
 </p>
 <p float="left">
