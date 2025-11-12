@@ -1,5 +1,5 @@
 # Mixture of Experts Approaches in Dense Retrieval Tasks
-Read the paper [here](https://arxiv.org/abs/2510.15683)
+Read the paper [here](https://arxiv.org/abs/2510.15683). <br>
 To reproduce the experiments, complete the following steps:
 
 ## Step 1:
