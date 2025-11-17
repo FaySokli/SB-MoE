@@ -57,14 +57,14 @@ def main(cfg: DictConfig):
         device=cfg.model.init.device
     )
     if cfg.model.adapters.use_adapters:
-        if cfg.model.init.specialized_mode == "variant_top1":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
-            # model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-        elif cfg.model.init.specialized_mode == "variant_all":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
-            # model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))   
+        if cfg.model.init.specialized_mode == "sbmoe_top1":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt')
+            # model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+        elif cfg.model.init.specialized_mode == "sbmoe_all":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt')
+            # model.load_state_dict(torch.load(f'output/msmarco/saved_models/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))   
         elif cfg.model.init.specialized_mode == "random":
             model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
             print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt')
@@ -106,7 +106,7 @@ def main(cfg: DictConfig):
                 embedding_matrix[index - len(texts) : index] = batch_doc_embs.cpu()
                 # embedding_matrix[index - len(texts) : index] = model.doc_encoder(texts).cpu()
 
-                # ---- Track expert usage per doc (variant_all) ----
+                # ---- Track expert usage per doc (sbmoe_all) ----
                 expert_probs = model.cls(batch_doc_embs)  # [B, num_experts]
                 top_experts = torch.argmax(expert_probs, dim=1).cpu()  # [B]
                 all_expert_ids.extend(top_experts.tolist())

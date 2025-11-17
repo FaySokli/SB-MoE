@@ -156,12 +156,12 @@ def main(cfg: DictConfig):
     )
     
     if cfg.model.adapters.use_adapters:
-        if cfg.model.init.specialized_mode == "variant_top1":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
-        elif cfg.model.init.specialized_mode == "variant_all":
-            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt', weights_only=True))
-            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-variant_top1.pt')
+        if cfg.model.init.specialized_mode == "sbmoe_top1":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt')
+        elif cfg.model.init.specialized_mode == "sbmoe_all":
+            model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt', weights_only=True))
+            print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-sbmoe_top1.pt')
         elif cfg.model.init.specialized_mode == "random":
             model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt', weights_only=True))
             print(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}_experts{cfg.model.adapters.num_experts}-random.pt')

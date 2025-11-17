@@ -9,9 +9,9 @@ For our experiments, we use the following four publicly available IR benchmarks:
 
 ## Step 2:
 Update the parameters in the ```pipeline.sh``` file to the desired ones and execute the script. <br><br>
-For example, the following command will train *variant_ALL* on TinyBERT using the HotpotQA dataset by employing 6 experts: <br>
-```python3 1_train_new_moe.py model=tinybert dataset=hotpotqa testing=hotpotqa model.adapters.use_adapters=True model.adapters.num_experts_to_use=6 model.adapters.num_experts=6 model.init.specialized_mode=variant_all``` <br><br>
-_*Note: When use_adapters=True, only two modes are allowed; (i) 'variant_all' and (ii) 'variant_top1'.
+For example, the following command will train *sbmoe_ALL* on TinyBERT using the HotpotQA dataset by employing 6 experts: <br>
+```python3 1_train_new_moe.py model=tinybert dataset=hotpotqa testing=hotpotqa model.adapters.use_adapters=True model.adapters.num_experts_to_use=6 model.adapters.num_experts=6 model.init.specialized_mode=sbmoe_all``` <br><br>
+_*Note: When use_adapters=True, only two modes are allowed; (i) 'sbmoe_all' and (ii) 'sbmoe_top1'.
 
 ## 3-Dimensional T-SNE plots
 3D t-SNE representations of the same query and its top 1000 documents, on the left embedded by the original DRM
