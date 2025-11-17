@@ -10,7 +10,6 @@ init:
   normalize: False
   temperature: 1
 adapters:
-  num_experts_to_use: 6
   num_experts: 6
   residual: True
   latent_size: 192

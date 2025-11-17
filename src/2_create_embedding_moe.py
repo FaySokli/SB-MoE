@@ -40,7 +40,6 @@ def main(cfg: DictConfig):
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.init.tokenizer)
     config = AutoConfig.from_pretrained(cfg.model.init.doc_model)
     config.num_experts = cfg.model.adapters.num_experts
-    config.num_experts_to_use = cfg.model.adapters.num_experts_to_use
     config.adapter_residual = cfg.model.adapters.residual
     config.adapter_latent_size = cfg.model.adapters.latent_size
     config.adapter_non_linearity = cfg.model.adapters.non_linearity
