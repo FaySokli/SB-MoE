@@ -1,0 +1,15 @@
+beir
+click
+hydra-core
+indxr
+ipdb
+matplotlib
+numpy
+omegaconf
+pandas
+ranx
+scikit_learn
+sentence_transformers
+torch
+tqdm
+transformers
